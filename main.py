@@ -6,6 +6,8 @@ debug_screenshots_folder = 'debug-screenshots/'
 
 class Game_Instance(object):
     def __init__(self):
+        self._full_screen_height = 1080
+        self._full_screen_width = 1920
         self._game_title = 'One Step From Eden'
         self._keyboard_action_confirm_press = 'q'
         self._time_seconds_delay_to_take_control = 2
