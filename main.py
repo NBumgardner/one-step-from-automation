@@ -1,7 +1,30 @@
+from PIL import Image
 import pyautogui
+from pytesseract import pytesseract
 
 debug_screenshot_latest_file_name = 'latest_screenshot.png'
 debug_screenshots_folder = 'debug-screenshots/'
+screenshot_latest_start_game_file_name = 'latest_start_game_screenshot_file_name.png'
+
+
+class Image_Reader:
+    def __init__(self):
+        self._natural_language = 'eng'
+
+        tesseract_windows_path_folder = 'D:\\Program Files\\Tesseract-OCR\\'
+        tesseract_windows_path_file = 'tesseract.exe'
+        self._tesseract_windows_path = '{}{}'.format(
+            tesseract_windows_path_folder,
+            tesseract_windows_path_file
+        )
+
+    def extract_text(self, image_path):
+        opened_image_file = Image.open(image_path)
+        extracted_text = pytesseract.image_to_string(
+            opened_image_file,
+            lang=self._natural_language
+        )
+        return extracted_text
 
 
 class Game_Instance(object):
@@ -33,11 +56,21 @@ class Game_Instance(object):
     def wait_for_user_to_focus_on_the_game(self):
         pyautogui.sleep(self.get_delay_to_take_control())
 
-    def play_game(self):
+    def play_game(self, image_reader):
         '''
         Choose the current option by pressing the confirm button.
         '''
         print('Begin playing')
+
+        # Look at the current state of the game.
+        screenshot_path = '{}/{}'.format(
+            debug_screenshots_folder,
+            screenshot_latest_start_game_file_name
+        )
+        pyautogui.screenshot(screenshot_path)
+
+        extracted_text = image_reader.extract_text(screenshot_path)
+        print('Words on screen: {}'.format(extracted_text))
 
         # Assume game is in focus and option 'Single Player' is highlighted.
         pyautogui.press(self.get_keyboard_action_confirm_press())
@@ -63,9 +96,11 @@ def main():
     response_message = game_instance.get_start_message_when_game_is_open()
     print(response_message)
 
+    image_reader = Image_Reader()
+
     game_instance.wait_for_user_to_focus_on_the_game()
 
-    game_instance.play_game()
+    game_instance.play_game(image_reader)
 
 
 if __name__ == '__main__':
@@ -74,5 +109,9 @@ if __name__ == '__main__':
     # Take a screenshot of right before where the application ended.
     # Then pause before closing the script for debugging purposes.
     image = pyautogui.screenshot(
-        '{}/{}'.format(debug_screenshots_folder, debug_screenshot_latest_file_name))
+        '{}/{}'.format(
+            debug_screenshots_folder,
+            debug_screenshot_latest_file_name
+        )
+    )
     input()
