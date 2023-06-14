@@ -138,11 +138,34 @@ class Game_Instance(object):
         self._full_screen_width = 1920
         self._game_title = 'One Step From Eden'
         self._keyboard_action_confirm_press = 'q'
+        self._screen_height = self._full_screen_height
+        self._screen_left_side_position = 0
+        self._screen_top_side_position = 0
+        self._screen_width = self._full_screen_width
+        self._screen_window_ribbon_height = 30
+        self._screen_window_ribbon_height_half = self._screen_window_ribbon_height / 2
         self._time_seconds_delay_to_take_control = 2
         self._time_seconds_delay_to_menu_transition = 0.88
 
+    def action_focus_on_windowed_game(self):
+        target_coordinate_x = self._screen_left_side_position + \
+            self._screen_window_ribbon_height_half
+
+        target_coordinate_y = self._screen_top_side_position + \
+            self._screen_window_ribbon_height_half
+
+        pyautogui.click(target_coordinate_x, target_coordinate_y)
+
     def get_delay_to_take_control(self):
         return self._time_seconds_delay_to_take_control
+
+    def get_screen_region(self):
+        return [
+            self._screen_left_side_position,
+            self._screen_top_side_position,
+            self._screen_width,
+            self._screen_height
+        ]
 
     def get_game_title(self):
         return self._game_title
@@ -158,6 +181,24 @@ class Game_Instance(object):
 
     def get_start_message_when_game_is_open(self):
         return 'Watch me play {}.'.format(self._game_title)
+
+    def set_screen_region(self, width, height, corner_name='top_right'):
+        if width <= 0:
+            raise Exception('Error: Screen width {} is too low.'.format(width))
+
+        if height <= 0:
+            raise Exception(
+                'Error: Screen height {} is too low.'.format(width))
+
+        if corner_name != 'top_right':
+            raise Exception(
+                'Error: Invalid corner name {} chosen.'.format(corner_name))
+
+        self._screen_left_side_position = self._full_screen_width - width
+
+        self._screen_top_side_position = 0
+
+        return self.get_screen_region()
 
     def wait_for_user_to_focus_on_the_game(self):
         pyautogui.sleep(self.get_delay_to_take_control())
@@ -397,11 +438,52 @@ def play_game_v1():
     input()
 
 
+def play_game_v2():
+    '''
+    To Do:
+    Asserts game is open as a window in the top-left corner before playing.
+    '''
+    game_instance = Game_Instance()
+
+    game_instance_screen_height = 664
+    game_instance_screen_width = 1176
+
+    game_instance_windowed_screen_region = game_instance.set_screen_region(
+        game_instance_screen_width,
+        game_instance_screen_height
+    )
+
+    # To Do:
+    # Assert game is open as a window in the top-right corner before playing.
+
+    # Focus on the game window.
+    game_instance.action_focus_on_windowed_game()
+
+    # To Do:
+    # Assert which menu the game has open.
+
+    # To Do:
+    # Assert which option is highlighted, or click an option directly.
+
+    # Assume game is in focus and option 'Single Player' is highlighted.
+    game_instance_navigator = Game_Instance_Navigator()
+    game_instance_navigator.confirm_option(game_instance)
+
+    # Take a screenshot of right before where the application ended.
+    pyautogui.screenshot(
+        '{}/{}'.format(
+            debug_screenshots_folder,
+            debug_screenshot_latest_file_name
+        ),
+        game_instance_windowed_screen_region
+    )
+
+
 def main():
     '''
     Run a single-file Python program to play One Step from Eden.
     '''
-    play_game_v1()
+    play_game_v2()
 
 
 if __name__ == '__main__':
