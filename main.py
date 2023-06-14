@@ -440,11 +440,33 @@ def play_game_v1():
 
 def play_game_v2():
     '''
-    To Do:
-    Asserts game is open as a window in the top-left corner before playing.
-    '''
-    game_instance = Game_Instance()
+    Example function to play the game One Step From Eden on a Windows PC,
 
+    ## Setup
+
+    Requires the user to window the game in the top-right corner of the user's monitor at the smallest allowed dimensions, 1176px by 664px.
+
+    ## Steps Implemented
+
+    1. Click on the game windowed in the top-right corner of the monitor.
+    2. If the game is on the start menu, then raise an error and stop early.
+    3. Else, play by pressing the 'Q' button once.
+
+    ## To Do
+
+    - Remember original mouse position, to restore when the program ends.
+    - Assert game is open as a window in the top-right corner before playing.
+    - Assert which option is highlighted, or click an option directly.
+    '''
+    # To Do:
+    # Remember original mouse position, to restore when the program ends.
+
+    # Initialize class dependencies.
+    game_instance = Game_Instance()
+    game_instance_navigator = Game_Instance_Navigator()
+    image_reader = Image_Reader()
+
+    # Initialize values of class Game_Instance.
     game_instance_screen_height = 664
     game_instance_screen_width = 1176
 
@@ -456,17 +478,44 @@ def play_game_v2():
     # To Do:
     # Assert game is open as a window in the top-right corner before playing.
 
+    # Look at the current state of the game.
+    screenshot_path = '{}/{}'.format(
+        debug_screenshots_folder,
+        screenshot_current_file_name
+    )
+    pyautogui.screenshot(screenshot_path, game_instance_windowed_screen_region)
+
     # Focus on the game window.
     game_instance.action_focus_on_windowed_game()
 
-    # To Do:
     # Assert which menu the game has open.
+    game_instance_scene_locator = Game_Instance_Scene_Locator(
+        Game_Scene_One_Step_From_Eden,
+        image_reader
+    )
+
+    is_located_on_title_scene = game_instance_scene_locator.is_scene(
+        Game_Scene_One_Step_From_Eden.title,
+        screenshot_path
+    )
+
+    if not is_located_on_title_scene:
+        # Take a screenshot of right before where the application ended.
+        pyautogui.screenshot(
+            '{}/{}'.format(
+                debug_screenshots_folder,
+                debug_screenshot_latest_file_name
+            ),
+            game_instance_windowed_screen_region
+        )
+
+        raise Exception(
+            'Error: Cannot start playing unless the game is open on the title screen.')
 
     # To Do:
     # Assert which option is highlighted, or click an option directly.
 
-    # Assume game is in focus and option 'Single Player' is highlighted.
-    game_instance_navigator = Game_Instance_Navigator()
+    # Assume game option 'Single Player' is highlighted.
     game_instance_navigator.confirm_option(game_instance)
 
     # Take a screenshot of right before where the application ended.
