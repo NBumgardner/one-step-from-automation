@@ -342,6 +342,15 @@ class Game_Instance_Navigator():
 
 
 def main():
+    '''
+    Example function to play the game One Step From Eden on a Windows PC.
+
+    ## Steps Implemented
+
+    1. Prompt the user before starting to play the PC game One Step From Eden.
+    2. If yes, wait for a bit so the user can focus on the game, then start playing.
+    3. Play by pressing the 'Q' button once.
+    '''
     # Copy over values from game properties.
     game_instance = Game_Instance()
 
