@@ -341,7 +341,7 @@ class Game_Instance_Navigator():
         pyautogui.press(game_instance.get_keyboard_action_confirm_press())
 
 
-def main():
+def play_game_v1():
     '''
     Example function to play the game One Step From Eden on a Windows PC.
 
@@ -385,10 +385,6 @@ def main():
         game_instance_scene_locator
     )
 
-
-if __name__ == '__main__':
-    main()
-
     # Take a screenshot of right before where the application ended.
     # Then pause before closing the script for debugging purposes.
     image = pyautogui.screenshot(
@@ -397,4 +393,16 @@ if __name__ == '__main__':
             debug_screenshot_latest_file_name
         )
     )
+
     input()
+
+
+def main():
+    '''
+    Run a single-file Python program to play One Step from Eden.
+    '''
+    play_game_v1()
+
+
+if __name__ == '__main__':
+    main()
